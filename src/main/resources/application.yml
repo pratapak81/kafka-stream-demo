@@ -1,0 +1,28 @@
+server:
+  port: 8083
+
+spring:
+  cloud:
+    stream:
+      kafka:
+        streams:
+          binder:
+            application-id: kafka-stream-demo
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        binder:
+          brokers: localhost:9092
+      bindings:
+        eventIn:
+          destination: nscevent
+          group: nsceventGroup
+        customEventIn:
+          destination: nsccustomevent
+        eventOut:
+          destination: nscevent
+        customEventOut:
+          destination: nsccustomevent
