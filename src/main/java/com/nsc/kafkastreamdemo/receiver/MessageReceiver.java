@@ -16,11 +16,10 @@ public class MessageReceiver {
     @StreamListener(target = EventSink.EVENT_INPUT)
     @SendTo(EventSource.CUSTOM_EVENT_OUTPUT)
     public KStream<String, CustomEvent> process(KStream<String, Event> eventKStream) {
-        eventKStream.foreach((key, value) -> {
+       /* eventKStream.foreach((key, value) -> {
             System.out.println("-------- Received Before Processing ---------");
             System.out.println(value.getName());
-        });
-
+        });*/
         return eventKStream.map((key, value) -> KeyValue.pair(key, new CustomEvent(value.getName().toUpperCase(), "Bengaluru")));
     }
 
