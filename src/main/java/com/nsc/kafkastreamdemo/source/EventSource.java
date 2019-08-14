@@ -1,5 +1,7 @@
 package com.nsc.kafkastreamdemo.source;
 
+import com.nsc.kafkastreamdemo.model.CustomEvent;
+import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;
 
@@ -12,5 +14,5 @@ public interface EventSource {
     MessageChannel eventOutput();
 
     @Output(CUSTOM_EVENT_OUTPUT)
-    MessageChannel customEventOutput();
+    KStream<String, CustomEvent> customEventOutput();
 }

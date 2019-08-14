@@ -14,6 +14,13 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
                 value:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+          bindings:
+            customEventIn:
+              consumer:
+                application-id: custom-event-stream
+            customEventOut:
+              producer:
+                application-id: custom-event-stream
         binder:
           brokers: localhost:9092
       bindings:
@@ -22,6 +29,7 @@ spring:
           group: nsceventGroup
         customEventIn:
           destination: nsccustomevent
+          group: customEventGroup
         eventOut:
           destination: nscevent
         customEventOut:
