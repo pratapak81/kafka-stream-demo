@@ -13,7 +13,7 @@ spring:
                 key:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
                 value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                  serde: org.springframework.kafka.support.serializer.JsonSerde
           bindings:
             customEventIn:
               consumer:
