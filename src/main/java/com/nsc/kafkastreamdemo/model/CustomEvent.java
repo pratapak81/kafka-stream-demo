@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CustomEvent {
     String name;
+    Long value;
     String place;
 }

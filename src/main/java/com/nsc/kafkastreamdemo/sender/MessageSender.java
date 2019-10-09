@@ -16,9 +16,10 @@ public class MessageSender {
     @Autowired
     EventSource eventSource;
 
-    public void send() {
+    public void send(int value) {
         Event event = Event.builder()
-                .name("Pratap " + count++)
+                .name("HEART_BEAT")
+                .value(value)
                 .build();
 
         Message<Event> message = MessageBuilder
