@@ -21,6 +21,8 @@ spring:
             customEventOut:
               producer:
                 application-id: custom-event-stream
+          #time-window:
+          #  advance-by: 10000
         binder:
           brokers: localhost:9092
       bindings:

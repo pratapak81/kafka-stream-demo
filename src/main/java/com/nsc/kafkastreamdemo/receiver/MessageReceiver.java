@@ -25,15 +25,14 @@ public class MessageReceiver {
                 .windowedBy(TimeWindows.of(15000))
                 .count()
                 .toStream((key, value) -> key.key())
-                //.filter((key, value) -> value > 10)
-                .map((key, value) -> KeyValue.pair(key, new CustomEvent(key, value, "Bengaluru")));
+                .map((key, value) -> KeyValue.pair(key, new CustomEvent(key, value, "Pratap")));
     }
 
     @StreamListener(target = EventSink.CUSTOM_EVENT_INPUT)
     public void processSecondLevel(KStream<String, CustomEvent> eventKStream) {
         eventKStream.foreach((key, value) -> {
             System.out.println("----------- After Process ----------");
-            System.out.println(value.getName() + " " + value.getValue() + " " + value.getPlace());
+            System.out.println(String.format("Patient crossed threshold %d times in the last 15 seconds", value.getValue()));
         });
     }
 }
