@@ -36,8 +36,8 @@ public class MessageReceiver {
 
         return eventKStream
                 .selectKey((key, event) -> event.getTenantId() + "-" + event.getLocation())
-                .groupByKey(Grouped.with(Serdes.String(), eventJsonSerdeJsonSerde))
-                .windowedBy(TimeWindows.of(Duration.ofMinutes(1)))
+                .groupByKey(Serialized.with(Serdes.String(), eventJsonSerdeJsonSerde))
+                .windowedBy(TimeWindows.of(60000))
                 .aggregate(
                         ArrayList::new,
                         (key, event, eventList) -> {
