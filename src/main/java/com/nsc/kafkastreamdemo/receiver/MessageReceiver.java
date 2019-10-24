@@ -12,6 +12,7 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.kafka.support.serializer.JsonSerde;
 import org.springframework.messaging.handler.annotation.SendTo;
 
+import java.time.Duration;
 import java.util.ArrayList;
 
 @EnableBinding(EventSink.class)
@@ -35,8 +36,8 @@ public class MessageReceiver {
 
         return eventKStream
                 .selectKey((key, event) -> event.getTenantId() + "-" + event.getLocation())
-                .groupByKey(Serialized.with(Serdes.String(), eventJsonSerdeJsonSerde))
-                .windowedBy(TimeWindows.of(60000))
+                .groupByKey(Grouped.with(Serdes.String(), eventJsonSerdeJsonSerde))
+                .windowedBy(TimeWindows.of(Duration.ofMinutes(1)))
                 .aggregate(
                         ArrayList::new,
                         (key, event, eventList) -> {
