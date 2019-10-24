@@ -13,8 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomEvent {
-    String name;
-    Long value;
-    String place;
-    List<Event> eventList = new ArrayList<>();
+    private String tenantId;
+    private String location;
+    List<Integer> valueList = new ArrayList<>();
 }

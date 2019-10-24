@@ -15,6 +15,9 @@ spring:
                 value:
                   serde: org.springframework.kafka.support.serializer.JsonSerde
           bindings:
+            eventIn:
+              consumer:
+                application-id: event-stream
             customEventIn:
               consumer:
                 application-id: custom-event-stream

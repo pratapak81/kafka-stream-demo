@@ -30,27 +30,29 @@ public class MessageReceiver {
                 .toStream((key, value) -> key.key())
                 .map((key, value) -> KeyValue.pair(key, new CustomEvent(key, value, "Pratap")));*/
 
-        JsonSerde<ArrayList<Event>> listOfEventJsonSerde = new JsonSerde<>(ArrayList.class);
+        JsonSerde<ArrayList<Integer>> listOfIntegerJsonSerde = new JsonSerde<>(ArrayList.class);
+        JsonSerde<Event> eventJsonSerdeJsonSerde = new JsonSerde<>(Event.class);
 
         return eventKStream
-                .groupByKey()
-                .windowedBy(TimeWindows.of(20000))
+                .selectKey((key, event) -> event.getTenantId() + "-" + event.getLocation())
+                .groupByKey(Serialized.with(Serdes.String(), eventJsonSerdeJsonSerde))
+                .windowedBy(TimeWindows.of(60000))
                 .aggregate(
                         ArrayList::new,
                         (key, event, eventList) -> {
-                            eventList.add(event);
+                            eventList.add(event.getValue());
                             return eventList;
                         },
-                        Materialized.with(Serdes.String(), listOfEventJsonSerde))
+                        Materialized.with(Serdes.String(), listOfIntegerJsonSerde))
                 .toStream((key, value) -> key.key())
-                .map((key, value) -> KeyValue.pair(key, new CustomEvent(key, 10L, "Pratap", value)));
+                .map((key, value) -> KeyValue.pair(key, new CustomEvent(key.split("-")[0], key.split("-")[1], value)));
     }
 
     @StreamListener(target = EventSink.CUSTOM_EVENT_INPUT)
     public void processSecondLevel(KStream<String, CustomEvent> eventKStream) {
         eventKStream.foreach((key, value) -> {
             System.out.println("key = " + key);
-            System.out.println("value = " + value.getEventList());
+            System.out.println("value = " + value.getValueList());
         });
     }
 }

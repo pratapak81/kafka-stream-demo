@@ -20,4 +20,9 @@ public class EventController {
     public void send(@RequestParam(value = "value") Integer value) {
         messageSender.send(value);
     }
+
+    @RequestMapping(value = "/send", method = RequestMethod.GET)
+    public void send() {
+        messageSender.send();
+    }
 }
