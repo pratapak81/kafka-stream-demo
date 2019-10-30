@@ -15,5 +15,5 @@ import java.util.List;
 public class CustomEvent {
     private String tenantId;
     private String location;
-    List<Integer> valueList = new ArrayList<>();
+    private EventType eventType;
 }
