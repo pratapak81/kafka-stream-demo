@@ -22,9 +22,9 @@ public class MessageSender {
             3, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
     private int[] testValuesY = {
-            6, 6, 6, 6, 6, 6, 6, 5, 6, 6, 7, 8, 5, 7, 5,
-            5, 4, 2, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-            3, 4, 4, 4, 4, 4, 0, 4, 2, 1, 0, 0, 0, 0, 0
+            9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+            9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+            9, 9, 9, 9, 9, 9, 3, 3, 9, 9, 9, 9, 9, 9, 9
     };
 
     @Autowired
@@ -39,7 +39,7 @@ public class MessageSender {
 
         Message<Event> message = MessageBuilder
                 .withPayload(event)
-                .setHeader(KafkaHeaders.MESSAGE_KEY, event.getTenantId().getBytes())
+                .setHeader(KafkaHeaders.MESSAGE_KEY, (event.getTenantId()+"-"+event.getLocation()).getBytes())
                 .build();
 
         eventSource.eventOutput().send(message);
@@ -51,27 +51,29 @@ public class MessageSender {
             Event eventWhitefield = Event.builder()
                     .tenantId("APOLLO")
                     .location("Whitefield")
-                    .value(testValuesX[count++])
+                    .value(testValuesX[count])
                     .build();
 
             Message<Event> messageWhitefield = MessageBuilder
                     .withPayload(eventWhitefield)
-                    .setHeader(KafkaHeaders.MESSAGE_KEY, eventWhitefield.getTenantId().getBytes())
+                    .setHeader(KafkaHeaders.MESSAGE_KEY, (eventWhitefield.getTenantId()+"-"+eventWhitefield.getLocation()).getBytes())
                     .build();
 
-            /*Event eventJayanagar = Event.builder()
+            Event eventJayanagar = Event.builder()
                     .tenantId("APOLLO")
                     .location("Jayanagar")
-                    .value(testValuesY[count++])
+                    .value(testValuesY[count])
                     .build();
 
             Message<Event> messageJayanagar = MessageBuilder
                     .withPayload(eventJayanagar)
-                    .setHeader(KafkaHeaders.MESSAGE_KEY, eventJayanagar.getTenantId().getBytes())
-                    .build();*/
+                    .setHeader(KafkaHeaders.MESSAGE_KEY, (eventJayanagar.getTenantId()+"-"+eventJayanagar.getLocation()).getBytes())
+                    .build();
 
             eventSource.eventOutput().send(messageWhitefield);
-            //eventSource.eventOutput().send(messageJayanagar);
+            eventSource.eventOutput().send(messageJayanagar);
+
+            count++;
         };
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(runnable, 1000, 4000, TimeUnit.MILLISECONDS);

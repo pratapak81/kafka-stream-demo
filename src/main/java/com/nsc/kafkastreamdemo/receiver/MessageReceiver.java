@@ -38,12 +38,13 @@ public class MessageReceiver {
                 .aggregate(
                         ArrayList::new,
                         (key, event, eventList) -> {
-                            Optional<CustomEvent> customEventOptional = Optional.ofNullable(phaseDetectionService.process(event.getValue()));
+                            Optional<CustomEvent> customEventOptional = Optional.ofNullable(phaseDetectionService.process(event));
                             customEventOptional.ifPresent(eventList::add);
                             return eventList;
                         },
                         Materialized.with(Serdes.String(), listOfIntegerJsonSerde))
                 .toStream((key, value) -> key.key())
+                .filter(((key, value) -> !value.isEmpty()))
                 .map(KeyValue::pair);
     }
 
