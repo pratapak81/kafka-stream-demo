@@ -56,7 +56,7 @@ public class MessageSender {
 
             Message<Event> messageWhitefield = MessageBuilder
                     .withPayload(eventWhitefield)
-                    .setHeader(KafkaHeaders.MESSAGE_KEY, (eventWhitefield.getTenantId()+"-"+eventWhitefield.getLocation()).getBytes())
+                    .setHeader(KafkaHeaders.MESSAGE_KEY, eventWhitefield.getLocation().getBytes())
                     .build();
 
             Event eventJayanagar = Event.builder()
@@ -76,6 +76,6 @@ public class MessageSender {
             count++;
         };
 
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(runnable, 1000, 4000, TimeUnit.MILLISECONDS);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(runnable, 0, 4000, TimeUnit.MILLISECONDS);
     }
 }

@@ -5,68 +5,64 @@ import com.nsc.kafkastreamdemo.model.Event;
 import com.nsc.kafkastreamdemo.model.EventType;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 
 @Service
 public class PhaseDetectionService {
 
-    private static class FIFOMap<K, V> extends LinkedHashMap<K, V> {
-
-        private int maxSize;
-
-        FIFOMap(int maxSize) {
-            super(maxSize);
-            this.maxSize = maxSize;
-        }
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-            return size() > maxSize;
-        }
-    }
-
-    private Map<String, FIFOMap<String, Integer>> machineData = new HashMap<>();
+    private List<Integer> eventList = new ArrayList<>();
+    private List<CustomEvent> customEventList = new ArrayList<>();
 
     private Predicate<Integer> predicateGreaterThanEqualTo = (n) -> n >= 5;
     private Predicate<Integer> predicateLesserThan = (n) -> n < 5;
 
-    private List<Predicate<Integer>> predicateList;
+    private List<Predicate<Integer>> predicateList = new LinkedList<>(Arrays.asList(predicateGreaterThanEqualTo,
+            predicateGreaterThanEqualTo, predicateLesserThan, predicateLesserThan));
 
-    public PhaseDetectionService() {
-        predicateList = new LinkedList<>(Arrays.asList(predicateGreaterThanEqualTo, predicateGreaterThanEqualTo,
-                predicateLesserThan, predicateLesserThan));
+    public List<Integer> getEventList() {
+        return eventList;
     }
 
-    public CustomEvent process(Event event) {
-        String key = event.getTenantId() + "-" + event.getLocation();
-        if (machineData.containsKey(key)) {
-            machineData.get(key).put(new Date().toString(), event.getValue());
-        } else {
-            FIFOMap<String, Integer> rawData = new FIFOMap<>(4);
-            rawData.put(new Date().toString(), event.getValue());
-            machineData.put(key, rawData);
-        }
-        return detectPhase(key);
+    public void setEventList(List<Integer> eventList) {
+        this.eventList = eventList;
     }
 
-    private CustomEvent detectPhase(String key) {
-        FIFOMap<String, Integer> rawData = machineData.get(key);
-        if (rawData == null || rawData.size() < 4) {
-            return null;
-        }
-        int index = 0;
-        for (Map.Entry<String, Integer> entry : rawData.entrySet()) {
-            if (!predicateList.get(index++).test(entry.getValue())) {
-                return null;
+    public PhaseDetectionService add(Event event) {
+        if (eventList.size() >= 4) {
+            Integer[] temp = new Integer[4];
+            for (int i = 1; i < eventList.size(); i++) {
+                temp[i - 1] = eventList.get(i);
             }
+            temp[3] = event.getValue();
+            eventList = Arrays.asList(temp);
+        } else {
+            eventList.add(event.getValue());
         }
-        return generateEvent();
+
+        System.out.println(eventList);
+        detectPhase();
+        return this;
     }
 
-    private CustomEvent generateEvent() {
-        return CustomEvent.builder()
-                .eventType(EventType.MAINTENANCE)
-                .build();
+    public List<CustomEvent> getCustomEvents() {
+        return customEventList;
+    }
+
+    private void detectPhase() {
+        if (eventList.size() == 4) {
+            for (int i = 0; i < eventList.size(); i++) {
+                if (!predicateList.get(i).test(eventList.get(i))) {
+                    return;
+                }
+            }
+            CustomEvent customEvent = CustomEvent.builder()
+                    .eventType(EventType.MAINTENANCE)
+                    .build();
+            customEventList.add(customEvent);
+        }
     }
 }
