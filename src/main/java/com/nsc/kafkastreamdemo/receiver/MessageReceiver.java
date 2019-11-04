@@ -7,13 +7,11 @@ import com.nsc.kafkastreamdemo.sink.EventSink;
 import com.nsc.kafkastreamdemo.source.EventSource;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.kstream.internals.TimeWindow;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.kafka.support.serializer.JsonSerde;
 import org.springframework.messaging.handler.annotation.SendTo;
 
-import java.time.Duration;
 import java.util.List;
 
 @EnableBinding(EventSink.class)
@@ -36,8 +34,8 @@ public class MessageReceiver {
                         Materialized.with(Serdes.String(), phaseDetectionServiceJsonSerde)
                 );
 
-        kTable.toStream((key, value) -> key.key())
-                .foreach((key, value) -> System.out.println(value.getMachineData()));
+        /*kTable.toStream((key, value) -> key.key())
+                .foreach((key, value) -> System.out.println(value.getMachineData()));*/
 
         return kTable.toStream((key, value) -> key.key())
                 .mapValues(PhaseDetectionService::getCustomEvents)
