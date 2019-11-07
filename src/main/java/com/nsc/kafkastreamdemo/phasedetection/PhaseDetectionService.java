@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.nsc.kafkastreamdemo.model.CustomEvent;
 import com.nsc.kafkastreamdemo.model.Event;
 import com.nsc.kafkastreamdemo.model.EventType;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.state.QueryableStoreTypes;
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.springframework.cloud.stream.binder.kafka.streams.InteractiveQueryService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,9 +28,13 @@ public class PhaseDetectionService {
     private List<Predicate<Integer>> predicateList = new LinkedList<>(Arrays.asList(predicateGreaterThanEqualTo,
             predicateGreaterThanEqualTo, predicateLesserThan, predicateLesserThan));
 
-    public PhaseDetectionService add(Event event) {
+    public PhaseDetectionService add(Event event, InteractiveQueryService interactiveQueryService) {
         machineData.put(new Date().toString()+"-"+event.getLocation(), event.getValue());
         //System.out.println(machineData);
+
+        ReadOnlyKeyValueStore<String, String> res = interactiveQueryService.getQueryableStore("CURRENT_PHASE", QueryableStoreTypes.keyValueStore());
+        String temp = res.get("Whitefield");
+        System.out.println("Current State " + temp);
         detectPhase();
         return this;
     }
