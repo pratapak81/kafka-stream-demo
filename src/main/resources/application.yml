@@ -14,28 +14,20 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
                 value:
                   serde: org.springframework.kafka.support.serializer.JsonSerde
+              spring:
+                json:
+                  value:
+                    default:
+                      type: com.nsc.kafkastreamdemo.model.Event
           bindings:
-            eventIn:
+            inputTable:
               consumer:
-                application-id: event-stream
-            customEventIn:
-              consumer:
-                application-id: custom-event-stream
-            customEventOut:
-              producer:
-                application-id: custom-event-stream
-          #time-window:
-          #  advance-by: 10000
+                materializedAs: all-songs
         binder:
           brokers: localhost:9092
       bindings:
-        eventIn:
+        inputTable:
           destination: nscevent
           group: nsceventGroup
-        customEventIn:
-          destination: nsccustomevent
-          group: customEventGroup
         eventOut:
           destination: nscevent
-        customEventOut:
-          destination: nsccustomevent
